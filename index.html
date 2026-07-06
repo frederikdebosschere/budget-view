@@ -10,15 +10,19 @@
   <script src="app.js" defer></script>
 </head>
 <body>
-  <!-- Lock screen -->
+  <!-- Lock screen (terminal / ASCII) -->
   <div id="lock" class="lock">
-    <form id="lock-form" class="lock-card">
-      <h1>Budget</h1>
-      <p class="muted">This view is encrypted. Enter the passphrase to unlock it.</p>
-      <input id="passphrase" type="password" autocomplete="current-password"
-             placeholder="Passphrase" autofocus />
-      <label class="remember"><input id="remember" type="checkbox" checked /> Remember on this device</label>
-      <button type="submit">Unlock</button>
+    <form id="lock-form" class="term">
+<pre class="ascii">    _____
+   /     \________________
+  |  ( )  |___ ___ ___ ___|
+   \_____/    |_|     |_|</pre>
+      <label class="term-input">
+        <span class="ip">passphrase&gt;</span>
+        <input id="passphrase" type="password" autocomplete="current-password" autofocus />
+      </label>
+      <label class="term-remember"><input id="remember" type="checkbox" checked /> remember on this device</label>
+      <button type="submit">[ unlock ]</button>
       <p id="lock-error" class="error" hidden></p>
     </form>
   </div>
@@ -50,7 +54,6 @@
     </header>
 
     <main id="content"></main>
-    <footer id="meta" class="meta muted"></footer>
   </div>
 </body>
 </html>

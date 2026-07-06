@@ -2,3 +2,4 @@
 # not committed by hand — keep the local test copy out of git.
 data.json
 .DS_Store
+DESIGN.md

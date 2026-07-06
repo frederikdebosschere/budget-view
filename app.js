@@ -189,7 +189,7 @@ function iconOrDot(g) {
   return dot;
 }
 
-function gridEl(groups, cellCount) {
+function gridEl(groups, cellCount, onTap) {
   const grid = el("div", "grid");
   const dist = distribute(groups, cellCount);
   const cells = [];
@@ -198,6 +198,8 @@ function gridEl(groups, cellCount) {
     const c = el("div", "cell");
     c.style.background = g.color;
     c.dataset.gid = g.id;
+    // Clicking a cell drills in exactly like clicking its row below.
+    if (onTap) c.onclick = () => onTap(g);
     grid.appendChild(c);
   }
   return grid;
@@ -269,7 +271,7 @@ function breakdownPanel(kind, txs, cats, globalMax) {
     head.appendChild(amt);
     panel.appendChild(head);
 
-    panel.appendChild(gridEl(subs, cellCountFor(parentTotal, globalMax)));
+    panel.appendChild(gridEl(subs, cellCountFor(parentTotal, globalMax), (g) => showTx(g)));
     const hasRealSubs = (cat?.subcategories || []).length > 0;
     if (hasRealSubs) {
       const rows = el("div", "rows");
@@ -305,7 +307,7 @@ function breakdownPanel(kind, txs, cats, globalMax) {
   panel.appendChild(head);
 
   if (groups.length === 0) { panel.appendChild(el("div", "empty", "No data")); return panel; }
-  panel.appendChild(gridEl(groups, cellCountFor(total, globalMax)));
+  panel.appendChild(gridEl(groups, cellCountFor(total, globalMax), (g) => { state.drill[kind] = g.id; render(); }));
   const rows = el("div", "rows");
   for (const g of groups) rows.appendChild(rowEl(g, total, () => { state.drill[kind] = g.id; render(); }));
   panel.appendChild(rows);
@@ -338,7 +340,7 @@ function savingsPanel(txs, cats, globalMax) {
   const withdrawnGroups = mainGroups(withdrawn, cats);
   const addSection = (groups, total) => {
     if (groups.length === 0) return;
-    panel.appendChild(gridEl(groups, cellCountFor(total, globalMax)));
+    panel.appendChild(gridEl(groups, cellCountFor(total, globalMax), (g) => showTx(g)));
     if (groups.length > 1) {
       const rows = el("div", "rows");
       for (const g of groups) rows.appendChild(rowEl(g, null, () => showTx(g)));
@@ -744,10 +746,6 @@ function startApp() {
       render();
     };
   });
-  const gen = state.data.generatedAt ? new Date(state.data.generatedAt) : null;
-  document.getElementById("meta").textContent = gen
-    ? `Snapshot from ${gen.toLocaleString()}` : "";
-
   render();
 }
 
@@ -773,7 +771,7 @@ window.addEventListener("DOMContentLoaded", () => {
       await tryUnlock(pass, remember);
     } catch (err) {
       errEl.textContent = err.name === "OperationError"
-        ? "Wrong passphrase." : (err.message || "Could not unlock.");
+        ? "✗ ACCESS DENIED — wrong passphrase" : ("✗ " + (err.message || "could not unlock"));
       errEl.hidden = false;
     }
   });
