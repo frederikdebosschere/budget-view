@@ -137,8 +137,12 @@ main { padding: 20px; max-width: 1200px; margin: 0 auto; }
 .card-title { font-size: 11px; letter-spacing: 0.06em; font-weight: 500; color: var(--muted); text-transform: uppercase; padding: 16px 18px 0; }
 .card-body { padding: 14px 18px 18px; }
 .chart-wrap { position: relative; height: 240px; }
-.sav-headline { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; }
-.sav-net { font-size: 22px; font-weight: 700; color: var(--accent); }
+/* Equal-height header above each chart so both plot areas (and their x-axes)
+   line up. Cash flow puts its legend here; savings puts its net headline. */
+.evo-head { height: 30px; display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
+.evo-head .lg { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); align-self: center; }
+.evo-head .lg i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.sav-net { font-size: 20px; font-weight: 600; color: var(--accent); }
 
 table.heat { width: 100%; border-collapse: collapse; font-size: 13px; }
 table.heat th, table.heat td { padding: 5px 8px; border-bottom: 0.5px solid var(--sep); text-align: center; white-space: nowrap; }

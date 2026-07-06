@@ -476,7 +476,14 @@ function renderEvolution(root) {
 
   const cashCard = el("div", "card");
   cashCard.appendChild(el("div", "card-title", "Monthly cash flow"));
-  const cashBody = el("div", "card-body"); const cashWrap = el("div", "chart-wrap");
+  const cashBody = el("div", "card-body");
+  const cashHead = el("div", "evo-head");
+  cashHead.innerHTML =
+    '<span class="lg"><i style="background:#10b981"></i>Income</span>' +
+    '<span class="lg"><i style="background:#ef4444"></i>Expenses</span>' +
+    '<span class="lg"><i style="background:#3b82f6"></i>Net savings</span>';
+  cashBody.appendChild(cashHead);
+  const cashWrap = el("div", "chart-wrap");
   const cashCanvas = document.createElement("canvas"); cashWrap.appendChild(cashCanvas);
   cashBody.appendChild(cashWrap); cashCard.appendChild(cashBody); top.appendChild(cashCard);
 
@@ -485,7 +492,7 @@ function renderEvolution(root) {
   const savBody = el("div", "card-body");
   const periodNet = summaries.reduce((s, m) => s + m.netSavings, 0);
   const signed = (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + money(Math.abs(v));
-  const savHead = el("div", "sav-headline");
+  const savHead = el("div", "evo-head");
   savHead.innerHTML = `<span class="sav-net">${signed(periodNet)}</span> <span class="muted">net this period</span>`;
   savBody.appendChild(savHead);
   const savWrap = el("div", "chart-wrap");
@@ -558,7 +565,9 @@ function chartOpts() {
   const muted = getComputedStyle(document.body).getPropertyValue("--muted") || "#888";
   return {
     responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { labels: { color: muted, boxWidth: 12 } } },
+    // Legends are rendered as HTML above each chart (in .evo-head) so both
+    // charts keep a full-height, equal plot area → their x-axes line up.
+    plugins: { legend: { display: false } },
     scales: {
       x: { ticks: { color: muted }, grid: { display: false } },
       y: {
