@@ -12,9 +12,9 @@ const state = {
   data: null,          // decrypted payload
   tab: "snapshot",
   month: null,         // "YYYY-MM"
-  range: "sixMonths",
+  range: "threeMonths",
   drill: {},           // { income: catId|null, expense: catId|null }
-  evoSort: null,       // { col, asc } for the heatmap
+  evoSort: { col: "median", asc: false }, // heatmap default: Median, high→low
 };
 
 const fmt = new Intl.NumberFormat("nl-BE", { style: "currency", currency: "EUR" });
@@ -561,7 +561,14 @@ function chartOpts() {
     plugins: { legend: { labels: { color: muted, boxWidth: 12 } } },
     scales: {
       x: { ticks: { color: muted }, grid: { display: false } },
-      y: { ticks: { color: muted, callback: (v) => money(v) }, grid: { color: "rgba(128,128,128,0.15)" } },
+      y: {
+        ticks: { color: muted, callback: (v) => money(v) },
+        grid: { color: "rgba(128,128,128,0.15)" },
+        // Pin the y-axis (and therefore the plot area) to a fixed width so the
+        // cash-flow and savings charts share the same left edge → their month
+        // ticks line up vertically.
+        afterFit: (s) => { s.width = 88; },
+      },
     },
   };
 }
