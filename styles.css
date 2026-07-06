@@ -38,16 +38,16 @@ button { font: inherit; cursor: pointer; }
 .muted { color: var(--muted); }
 .error { color: var(--red); font-size: 13px; }
 
-/* Lock screen — terminal / ASCII vibe (blue phosphor on near-black). */
-.lock { min-height: 100vh; display: grid; place-items: center; padding: 20px; background: #070a12; }
+/* Lock screen — terminal / ASCII vibe (white phosphor on near-black). */
+.lock { min-height: 100vh; display: grid; place-items: center; padding: 20px; background: #08080a; }
 .term {
-  --phos: #4db8ff; --phos-dim: #2f7fb0; --phos-edge: #1e4a66;
+  --phos: #ffffff; --phos-dim: #7d8590; --phos-edge: #33383f;
   font-family: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-  color: var(--phos); background: #0a0f18;
+  color: var(--phos); background: #101013;
   width: 100%; max-width: 540px; padding: 26px 26px 30px;
   border: 1px solid var(--phos-edge); border-radius: 8px;
-  box-shadow: 0 0 40px rgba(77,184,255,0.12), inset 0 0 60px rgba(77,184,255,0.05);
-  text-shadow: 0 0 6px rgba(77,184,255,0.40);
+  box-shadow: 0 0 40px rgba(255,255,255,0.10), inset 0 0 60px rgba(255,255,255,0.04);
+  text-shadow: 0 0 6px rgba(255,255,255,0.35);
   display: flex; flex-direction: column; gap: 14px;
 }
 /* Left-align the art so columns stay aligned; center the block as a whole. */
@@ -68,7 +68,7 @@ button { font: inherit; cursor: pointer; }
   color: var(--phos); padding: 8px 16px; border-radius: 4px; font: inherit; text-shadow: inherit; cursor: pointer;
   transition: background 0.12s;
 }
-.term button[type=submit]:hover { background: rgba(77,184,255,0.14); }
+.term button[type=submit]:hover { background: rgba(255,255,255,0.14); }
 .term .error { color: #ff5f56; text-shadow: 0 0 6px rgba(255,95,86,0.4); font-size: 13px; margin: 0; }
 
 /* Top bar */
