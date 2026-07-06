@@ -159,6 +159,7 @@ table.heat td.mon span { display: block; padding: 3px 6px; border-radius: 5px; f
 table.heat td.mon.zero span { color: var(--muted); }
 table.heat td.median { font-weight: 600; }
 table.heat td.spread { color: var(--muted); }
-.spark { display: block; }
+table.heat td.trend, table.heat th.trend { padding-left: 32px; padding-right: 32px; }
+.spark { display: block; margin: 0 auto; }
 
 .meta { padding: 8px 20px 24px; text-align: center; font-size: 12px; }

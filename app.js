@@ -663,7 +663,7 @@ function heatTable(months, rows) {
 
   htr.appendChild(th("Category", "cat", "cat"));
   months.forEach((m, i) => htr.appendChild(th(shortMonth(m), "m" + i)));
-  htr.appendChild(el("th", null, "Trend"));
+  htr.appendChild(el("th", "trend", "Trend"));
   htr.appendChild(th("Low", "low"));
   htr.appendChild(th("Median", "median"));
   htr.appendChild(th("High", "high"));
@@ -684,7 +684,7 @@ function heatTable(months, rows) {
       td.appendChild(span);
       tr.appendChild(td);
     }
-    const trend = el("td");
+    const trend = el("td", "trend");
     trend.appendChild(sparklineSVG(r.values, r.color));
     tr.appendChild(trend);
     tr.appendChild(el("td", "amt spread", money(Math.min(...r.values))));
