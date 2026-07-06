@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Budget</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="vendor/chart.umd.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <!-- Lock screen -->
+  <div id="lock" class="lock">
+    <form id="lock-form" class="lock-card">
+      <h1>Budget</h1>
+      <p class="muted">This view is encrypted. Enter the passphrase to unlock it.</p>
+      <input id="passphrase" type="password" autocomplete="current-password"
+             placeholder="Passphrase" autofocus />
+      <label class="remember"><input id="remember" type="checkbox" checked /> Remember on this device</label>
+      <button type="submit">Unlock</button>
+      <p id="lock-error" class="error" hidden></p>
+    </form>
+  </div>
+
+  <!-- App -->
+  <div id="app" hidden>
+    <header class="topbar">
+     <div class="topbar-inner">
+      <div class="topbar-side"></div>
+      <div class="tabs">
+        <button class="tab active" data-tab="snapshot">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
+          <span>Snapshot</span>
+        </button>
+        <button class="tab" data-tab="evolution">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+          <span>Evolution</span>
+        </button>
+      </div>
+      <div class="controls">
+        <select id="month-picker" class="picker" hidden></select>
+        <div id="range-picker" class="segmented" hidden>
+          <button data-range="threeMonths">3M</button>
+          <button data-range="sixMonths" class="active">6M</button>
+          <button data-range="ytd">YTD</button>
+        </div>
+      </div>
+     </div>
+    </header>
+
+    <main id="content"></main>
+    <footer id="meta" class="meta muted"></footer>
+  </div>
+</body>
+</html>

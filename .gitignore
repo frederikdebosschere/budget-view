@@ -1,0 +1,4 @@
+# The encrypted snapshot is published by the Budget app via the GitHub API,
+# not committed by hand — keep the local test copy out of git.
+data.json
+.DS_Store
