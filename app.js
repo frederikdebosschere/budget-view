@@ -746,6 +746,15 @@ function startApp() {
       render();
     };
   });
+
+  const gen = state.data.generatedAt ? new Date(state.data.generatedAt) : null;
+  const lu = document.getElementById("last-updated");
+  if (lu) {
+    lu.textContent = gen
+      ? "Last updated " + gen.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+      : "";
+  }
+
   render();
 }
 
