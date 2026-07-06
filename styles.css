@@ -81,7 +81,10 @@ button { font: inherit; cursor: pointer; }
   padding: 12px 20px; max-width: 1200px; margin: 0 auto;
 }
 /* Cal.com nav-pill-group: a soft-gray wrapper with a white active pill. */
-.last-updated { font-size: 12px; color: var(--muted); white-space: nowrap; }
+/* Discreet "Last updated" — indented so it lines up with the card text below
+   (main padding 20 + card border 1 + panel-head padding 18 ≈ 19px past the bar edge). */
+.last-updated { display: inline-flex; align-items: center; gap: 6px; margin-left: 19px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.last-updated .lu-icon { width: 13px; height: 13px; flex: 0 0 auto; }
 .tabs { display: inline-flex; align-items: center; gap: 2px; justify-self: center; background: var(--surface-soft); padding: 4px; border-radius: 9999px; }
 .controls { display: flex; align-items: center; gap: 8px; justify-self: end; }
 .tab {
