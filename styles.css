@@ -171,7 +171,7 @@ main { padding: 20px; max-width: 1200px; margin: 0 auto; }
 .evo-top { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 900px) { .evo-top { grid-template-columns: 1fr; } }
 .card-title { font-size: 11px; letter-spacing: 0.06em; font-weight: 500; color: var(--muted); text-transform: uppercase; padding: 16px 18px 0; }
-.card-body { padding: 14px 18px 18px; }
+.card-body { padding: 14px 18px 18px; overflow-x: auto; }  /* wide heatmap scrolls on small screens */
 .chart-wrap { position: relative; height: 240px; }
 /* Equal-height header above each chart so both plot areas (and their x-axes)
    line up. Cash flow puts its legend here; savings puts its net headline. */
@@ -197,4 +197,18 @@ table.heat td.median { font-weight: 600; }
 table.heat td.spread { color: var(--muted); }
 table.heat td.trend, table.heat th.trend { padding-left: 32px; padding-right: 32px; }
 .spark { display: block; margin: 0 auto; }
+
+/* ---- Mobile ---- */
+@media (max-width: 640px) {
+  main { padding: 14px; }
+  /* Top bar reflows: last-updated on its own centered row, then tabs, then controls. */
+  .topbar-inner { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 10px; padding: 10px 14px; }
+  .last-updated { order: -1; width: 100%; margin-left: 0; justify-content: center; }
+  .tabs { order: 1; }
+  .controls { order: 2; flex-wrap: wrap; justify-content: center; }
+  .picker { max-width: 100%; }
+  /* Heatmap: tighter trend padding + let it scroll rather than squeeze. */
+  table.heat td.trend, table.heat th.trend { padding-left: 12px; padding-right: 12px; }
+  .chart-wrap { height: 220px; }
+}
 
