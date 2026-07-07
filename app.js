@@ -664,11 +664,11 @@ function heatTable(months, rows) {
   };
 
   htr.appendChild(th("Category", "cat", "cat"));
-  months.forEach((m, i) => htr.appendChild(th(shortMonth(m), "m" + i)));
-  htr.appendChild(el("th", "trend", "Trend"));
-  htr.appendChild(th("Low", "low"));
-  htr.appendChild(th("Median", "median"));
-  htr.appendChild(th("High", "high"));
+  months.forEach((m, i) => htr.appendChild(th(shortMonth(m), "m" + i, "hm-month")));
+  htr.appendChild(el("th", "trend hm-trend", "Trend"));
+  htr.appendChild(th("Low", "low", "hm-low"));
+  htr.appendChild(th("Median", "median", "hm-median"));
+  htr.appendChild(th("High", "high", "hm-high"));
   thead.appendChild(htr); table.appendChild(thead);
 
   const tbody = el("tbody");
@@ -680,18 +680,18 @@ function heatTable(months, rows) {
     cat.appendChild(document.createTextNode(r.name));
     tr.appendChild(cat);
     for (const v of r.values) {
-      const td = el("td", "mon" + (v > 0 ? "" : " zero"));
+      const td = el("td", "mon hm-month" + (v > 0 ? "" : " zero"));
       const span = el("span", null, v > 0 ? money(v) : "—");
       if (v > 0) span.style.background = hexToRgba(r.color, 0.12 + (v / rowMax) * 0.6);
       td.appendChild(span);
       tr.appendChild(td);
     }
-    const trend = el("td", "trend");
+    const trend = el("td", "trend hm-trend");
     trend.appendChild(sparklineSVG(r.values, r.color));
     tr.appendChild(trend);
-    tr.appendChild(el("td", "amt spread", money(Math.min(...r.values))));
-    tr.appendChild(el("td", "amt median", money(median(r.values))));
-    tr.appendChild(el("td", "amt spread", money(Math.max(...r.values))));
+    tr.appendChild(el("td", "amt spread hm-low", money(Math.min(...r.values))));
+    tr.appendChild(el("td", "amt median hm-median", money(median(r.values))));
+    tr.appendChild(el("td", "amt spread hm-high", money(Math.max(...r.values))));
     tbody.appendChild(tr);
   }
   table.appendChild(tbody);

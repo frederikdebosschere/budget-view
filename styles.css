@@ -207,8 +207,19 @@ table.heat td.trend, table.heat th.trend { padding-left: 32px; padding-right: 32
   .tabs { order: 1; }
   .controls { order: 2; flex-wrap: wrap; justify-content: center; }
   .picker { max-width: 100%; }
-  /* Heatmap: tighter trend padding + let it scroll rather than squeeze. */
-  table.heat td.trend, table.heat th.trend { padding-left: 12px; padding-right: 12px; }
   .chart-wrap { height: 220px; }
+  /* Terminal login fills the small screen. */
+  .lock { padding: 12px; }
+  .term { max-width: 100%; padding: 20px 16px 24px; }
+  .term .ascii { font-size: 11px; }
 }
+@media (max-width: 380px) {
+  .term .ascii { font-size: 9.5px; }
+}
+
+/* Heatmap progressive disclosure — hide columns by priority instead of
+   scrolling. Priority (kept longest): Median > Low/High > Trend > months. */
+@media (max-width: 1024px) { table.heat .hm-month { display: none; } }
+@media (max-width: 760px)  { table.heat .hm-trend { display: none; } }
+@media (max-width: 560px)  { table.heat .hm-low, table.heat .hm-high { display: none; } }
 
