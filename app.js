@@ -167,10 +167,14 @@ function pct(value, total) {
 // Rendering — Snapshot
 // ---------------------------------------------------------------------------
 
-const el = (tag, cls, html) => {
+// The third argument is always set as *text*. Names, dates and descriptions
+// come from the decrypted snapshot, which carries CSV and backup-restore
+// input verbatim; never route data through innerHTML (security audit NV-1).
+// Build any markup with el()/appendChild instead.
+const el = (tag, cls, text) => {
   const n = document.createElement(tag);
   if (cls) n.className = cls;
-  if (html != null) n.innerHTML = html;
+  if (text != null) n.textContent = text;
   return n;
 };
 
@@ -226,12 +230,12 @@ function wireHover(panelEl, headEl, defaults, groups) {
     if (g) {
       labelEl.textContent = g.name.toUpperCase();
       labelEl.style.color = g.color;
-      totalEl.innerHTML = money(g.total);
+      totalEl.textContent = money(g.total);
       totalEl.className = "panel-total";
     } else {
       labelEl.textContent = defaults.label;
       labelEl.style.color = "";
-      totalEl.innerHTML = defaults.totalHTML;
+      totalEl.replaceChildren(...defaults.totalNodes());
       totalEl.className = defaults.totalClass;
     }
     panelEl.querySelectorAll(".cell").forEach((c) => c.classList.toggle("hot", !!gid && c.dataset.gid === gid));
@@ -311,7 +315,7 @@ function breakdownPanel(kind, txs, cats, globalMax) {
   const rows = el("div", "rows");
   for (const g of groups) rows.appendChild(rowEl(g, total, () => { state.drill[kind] = g.id; render(); }));
   panel.appendChild(rows);
-  wireHover(panel, head, { label, totalHTML: money(total), totalClass: "panel-total" }, new Map(groups.map((g) => [g.id, g])));
+  wireHover(panel, head, { label, totalNodes: () => [money(total)], totalClass: "panel-total" }, new Map(groups.map((g) => [g.id, g])));
   return panel;
 }
 
@@ -324,12 +328,16 @@ function savingsPanel(txs, cats, globalMax) {
   const withdrawnTotal = withdrawn.reduce((s, t) => s + t.amount, 0);
   const net = addedTotal - withdrawnTotal;
 
-  const netHTML = (net > 0 ? "+" : net < 0 ? "−" : "") + money(Math.abs(net)) +
-    ' <span class="muted" style="font-size:13px">net</span>';
+  const netNodes = () => [
+    (net > 0 ? "+" : net < 0 ? "−" : "") + money(Math.abs(net)) + " ",
+    el("span", "muted net-suffix", "net"),
+  ];
   const netClass = "panel-total " + (net >= 0 ? "pos" : "neg");
   const head = el("div", "panel-head");
   head.appendChild(el("div", "panel-label", "Savings"));
-  head.appendChild(el("div", netClass, netHTML));
+  const netEl = el("div", netClass);
+  netEl.append(...netNodes());
+  head.appendChild(netEl);
   panel.appendChild(head);
 
   if (added.length === 0 && withdrawn.length === 0) {
@@ -350,7 +358,7 @@ function savingsPanel(txs, cats, globalMax) {
   addSection(addedGroups, addedTotal);
   addSection(withdrawnGroups, withdrawnTotal);
   wireHover(panel, head,
-    { label: "Savings", totalHTML: netHTML, totalClass: netClass },
+    { label: "Savings", totalNodes: netNodes, totalClass: netClass },
     new Map([...addedGroups, ...withdrawnGroups].map((g) => [g.id, g])));
   return panel;
 }
@@ -360,7 +368,7 @@ function txListEl(txs, container) {
   for (const t of sorted) {
     const row = el("div", "tx");
     row.appendChild(el("span", "date", t.date));
-    row.appendChild(el("span", "desc", escapeHtml(t.description)));
+    row.appendChild(el("span", "desc", t.description));
     row.appendChild(el("span", "amt", money(t.amount)));
     container.appendChild(row);
   }
@@ -470,7 +478,9 @@ function destroyCharts() { charts.forEach((c) => c.destroy()); charts = []; }
 function renderEvolution(root) {
   const { months, summaries, rows } = buildEvolution();
   if (months.length === 0) {
-    root.appendChild(el("div", "card", '<div class="empty">Not enough completed months yet. Evolution shows completed months only.</div>'));
+    const card = el("div", "card");
+    card.appendChild(el("div", "empty", "Not enough completed months yet. Evolution shows completed months only."));
+    root.appendChild(card);
     return;
   }
   const wrap = el("div", "evo");
@@ -480,10 +490,13 @@ function renderEvolution(root) {
   cashCard.appendChild(el("div", "card-title", "Monthly cash flow"));
   const cashBody = el("div", "card-body");
   const cashHead = el("div", "evo-head");
-  cashHead.innerHTML =
-    '<span class="lg"><i style="background:#10b981"></i>Income</span>' +
-    '<span class="lg"><i style="background:#ef4444"></i>Expenses</span>' +
-    '<span class="lg"><i style="background:#3b82f6"></i>Net savings</span>';
+  for (const [color, label] of [["#10b981", "Income"], ["#ef4444", "Expenses"], ["#3b82f6", "Net savings"]]) {
+    const lg = el("span", "lg");
+    const swatch = el("i");
+    swatch.style.background = color; // CSSOM, not a style attribute: allowed by the CSP
+    lg.append(swatch, label);
+    cashHead.appendChild(lg);
+  }
   cashBody.appendChild(cashHead);
   const cashWrap = el("div", "chart-wrap");
   const cashCanvas = document.createElement("canvas"); cashWrap.appendChild(cashCanvas);
@@ -495,7 +508,7 @@ function renderEvolution(root) {
   const periodNet = summaries.reduce((s, m) => s + m.netSavings, 0);
   const signed = (v) => (v > 0 ? "+" : v < 0 ? "−" : "") + money(Math.abs(v));
   const savHead = el("div", "evo-head");
-  savHead.innerHTML = `<span class="sav-net">${signed(periodNet)}</span> <span class="muted">net this period</span>`;
+  savHead.append(el("span", "sav-net", signed(periodNet)), " ", el("span", "muted", "net this period"));
   savBody.appendChild(savHead);
   const savWrap = el("div", "chart-wrap");
   const savCanvas = document.createElement("canvas"); savWrap.appendChild(savCanvas);
@@ -704,7 +717,7 @@ function heatTable(months, rows) {
 
 function render() {
   const root = document.getElementById("content");
-  root.innerHTML = "";
+  root.replaceChildren();
   document.getElementById("month-picker").hidden = state.tab !== "snapshot";
   document.getElementById("range-picker").hidden = state.tab !== "evolution";
   if (state.tab === "snapshot") renderSnapshot(root);
@@ -718,7 +731,7 @@ function startApp() {
   const months = budgetMonths().slice().reverse(); // newest first
   state.month = months[0] || null;
   const picker = document.getElementById("month-picker");
-  picker.innerHTML = "";
+  picker.replaceChildren();
   const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   for (const m of months) {
     const opt = document.createElement("option");
@@ -756,11 +769,6 @@ function startApp() {
   }
 
   render();
-}
-
-function escapeHtml(s) {
-  return (s || "").replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
 // ---------------------------------------------------------------------------

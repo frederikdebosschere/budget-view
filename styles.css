@@ -36,6 +36,7 @@
 body { margin: 0; background: var(--bg); color: var(--text); }
 button { font: inherit; cursor: pointer; }
 .muted { color: var(--muted); }
+.net-suffix { font-size: 13px; }
 .error { color: var(--red); font-size: 13px; }
 
 /* Lock screen — terminal / ASCII vibe (white phosphor on near-black). */
