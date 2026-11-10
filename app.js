@@ -32,7 +32,29 @@ function b64ToBytes(b64) {
   return out;
 }
 
+// The envelope is fetched from a public URL, so check its shape before use:
+// a downgraded KDF or a 1-iteration count would make the passphrase cheap to
+// guess, and a huge count would hang the tab. Mirrors SnapshotCrypto.swift
+// (v 1, PBKDF2-SHA256, 210k iterations, 16-byte salt, 12-byte nonce).
+const ENVELOPE_LIMITS = { minIterations: 100000, maxIterations: 5000000 };
+
+function validateEnvelope(env) {
+  if (!env || typeof env !== "object") throw new Error("Published data is not an envelope.");
+  if (env.v !== 1) throw new Error(`Unsupported data version (${env.v}). Update the viewer.`);
+  if (env.kdf !== "PBKDF2-SHA256") throw new Error("Unsupported key derivation in published data.");
+  const it = env.iterations;
+  if (!Number.isInteger(it) || it < ENVELOPE_LIMITS.minIterations || it > ENVELOPE_LIMITS.maxIterations) {
+    throw new Error("Published data has an unsafe iteration count.");
+  }
+  for (const k of ["salt", "nonce", "ct"]) {
+    if (typeof env[k] !== "string" || env[k].length === 0) throw new Error(`Published data is missing ${k}.`);
+  }
+  if (b64ToBytes(env.salt).length < 16) throw new Error("Published data has a short salt.");
+  if (b64ToBytes(env.nonce).length !== 12) throw new Error("Published data has a bad nonce.");
+}
+
 async function decryptEnvelope(env, passphrase) {
+  validateEnvelope(env);
   const enc = new TextEncoder();
   const baseKey = await crypto.subtle.importKey(
     "raw", enc.encode(passphrase), "PBKDF2", false, ["deriveKey"]
